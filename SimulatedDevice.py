@@ -4,6 +4,8 @@
 import random
 import time
 import sys
+import uuid
+import datetime
 
 # Using the Python Device SDK for IoT Hub:
 #   https://github.com/Azure/azure-iot-sdk-python
@@ -16,16 +18,20 @@ from iothub_client import IoTHubMessage, IoTHubMessageDispositionResult, IoTHubE
 # The device connection string to authenticate the device with your IoT hub.
 # Using the Azure CLI:
 # az iot hub device-identity show-connection-string --hub-name {YourIoTHubName} --device-id MyNodeDevice --output table
-CONNECTION_STRING = "{Your IoT hub device connection string}"
+CONNECTION_STRING = "HostName=openHack3.azure-devices.net;DeviceId=jSong;SharedAccessKey=ET+ZhfVAo6w1flukm99QqiWsiSkUrVWEIt9IZkC1NrI="
 
-# Using the MQTT protocol.
+# Using the MQTT protocol
+
 PROTOCOL = IoTHubTransportProvider.MQTT
 MESSAGE_TIMEOUT = 10000
 
 # Define the JSON message to send to IoT Hub.
 TEMPERATURE = 20.0
 HUMIDITY = 60
-MSG_TXT = "{\"temperature\": %.2f,\"humidity\": %.2f}"
+MSG_TXT = str({
+    "ticketId": str(uuid.uuid4()),
+    "entryTime": str(datetime.datetime.now())
+})
 
 def send_confirmation_callback(message, result, user_context):
     print ( "IoT Hub responded to message with status: %s" % (result) )
@@ -45,7 +51,7 @@ def iothub_client_telemetry_sample_run():
             # Build the message with simulated telemetry values.
             temperature = TEMPERATURE + (random.random() * 15)
             humidity = HUMIDITY + (random.random() * 20)
-            msg_txt_formatted = MSG_TXT % (temperature, humidity)
+            msg_txt_formatted = MSG_TXT 
             message = IoTHubMessage(msg_txt_formatted)
 
             # Add a custom application property to the message.
